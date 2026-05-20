@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using TaskManager.Domain.Repositories;
+using TaskManager.Infrastructure.Data;
+using TaskManager.Infrastructure.Repositories;
+
 namespace TaskManager.WebApi
 {
     public class Startup
@@ -14,6 +19,11 @@ namespace TaskManager.WebApi
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddDbContext<AppDbContext>(Options =>
+                Options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
