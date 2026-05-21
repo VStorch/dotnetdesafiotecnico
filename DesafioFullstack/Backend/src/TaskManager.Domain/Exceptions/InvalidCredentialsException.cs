@@ -3,6 +3,8 @@ namespace TaskManager.Domain.Exceptions
     public class InvalidCredentialsException : DomainException
     {
         public InvalidCredentialsException()
-            : base("Invalid email or password.") { }
+            : base("Invalid email or password.")
+        {
+        }
     }
 }
