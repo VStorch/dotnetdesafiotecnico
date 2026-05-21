@@ -13,12 +13,32 @@ namespace TaskManager.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IMapper _mapper;
+        private readonly ITokenService _tokenService;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper)
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper, ITokenService tokenService)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _tokenService = tokenService;
+        }
+
+        public async Task<AuthResponseDto> LoginAsync(LoginUserDto loginDto)
+        {
+            var user = await _userRepository.GetByEmailAsync(loginDto.Email);
+
+            if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.PasswordHash))
+            {
+                throw new InvalidCredentialsException();
+            }
+
+            var token = _tokenService.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                Token = token,
+                User = _mapper.Map<UserResponseDto>(user)
+            };
         }
 
         public async Task<UserResponseDto> RegisterAsync(RegisterUserDto registerDto)

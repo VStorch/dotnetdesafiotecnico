@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Application.DTOs;
 using TaskManager.Application.Interfaces.Services;
+using TaskManager.WebApi.Responses;
 
 namespace TaskManager.WebApi.Controllers
 {
@@ -15,9 +16,19 @@ namespace TaskManager.WebApi.Controllers
             _userService = userService;
         }
 
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Login([FromBody] LoginUserDto loginDto)
+        {
+            var authResult = await _userService.LoginAsync(loginDto);
+
+            return Ok(authResult);
+        }
+
         [HttpPost("register")]
         [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto registerDto)
         {
             var response = await _userService.RegisterAsync(registerDto);
