@@ -1,5 +1,5 @@
 using AutoMapper;
-using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.User;
 using TaskManager.Application.Interfaces.Security;
 using TaskManager.Application.Interfaces.Services;
 using TaskManager.Domain.Entities;

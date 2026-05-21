@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TaskManager.Application.DTOs;
+using TaskManager.Application.DTOs.User;
 using TaskManager.Application.Interfaces.Services;
 using TaskManager.WebApi.Responses;
 
