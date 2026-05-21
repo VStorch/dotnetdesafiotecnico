@@ -12,7 +12,7 @@ namespace TaskManager.WebApi.Controllers
 
         public UsersController(IUserService userService)
         {
-            this._userService = userService;
+            _userService = userService;
         }
 
         [HttpPost("register")]

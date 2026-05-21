@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Diagnostics;
+using TaskManager.Domain.Exceptions;
 using TaskManager.WebApi.Responses;
 
 namespace TaskManager.WebApi.ExceptionHandlers
@@ -24,6 +25,12 @@ namespace TaskManager.WebApi.ExceptionHandlers
                 StatusCode = StatusCodes.Status500InternalServerError,
                 Message = "An unexpected error occurred on the server."
             };
+
+            if (exception is EmailAlreadyExistsException emailException)
+            {
+                errorResponse.StatusCode = StatusCodes.Status400BadRequest;
+                errorResponse.Message = emailException.Message;
+            }
 
             httpContext.Response.StatusCode = errorResponse.StatusCode;
             httpContext.Response.ContentType = "application/json";
