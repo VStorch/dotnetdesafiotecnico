@@ -31,6 +31,11 @@ namespace TaskManager.WebApi.ExceptionHandlers
                 errorResponse.StatusCode = StatusCodes.Status400BadRequest;
                 errorResponse.Message = emailException.Message;
             }
+            else if (exception is InvalidCredentialsException credentialsException)
+            {
+                errorResponse.StatusCode = StatusCodes.Status401Unauthorized;
+                errorResponse.Message = credentialsException.Message;
+            }
 
             httpContext.Response.StatusCode = errorResponse.StatusCode;
             httpContext.Response.ContentType = "application/json";
