@@ -10,5 +10,18 @@ namespace TaskManager.Domain.Entities
 
         public Guid UserId { get; set; }
         public User User { get; set; } = null!;
+
+        public TaskItem(string title, DateTime dueDate, Guid userId)
+        {
+            Id = Guid.NewGuid();
+            Title = title;
+            DueDate = dueDate;
+            UserId = userId;
+            IsCompleted = false;
+        }
+
+        protected TaskItem()
+        {
+        }
     }
 }

@@ -33,8 +33,10 @@ namespace TaskManager.WebApi
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITaskService, TaskService>();
 
             services.AddScoped<ITokenService, JwtTokenService>();
 
