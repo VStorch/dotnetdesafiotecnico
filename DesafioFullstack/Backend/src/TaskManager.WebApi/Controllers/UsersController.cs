@@ -19,6 +19,7 @@ namespace TaskManager.WebApi.Controllers
         [HttpPost("login")]
         [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody] LoginUserDto loginDto)
         {
             var authResult = await _userService.LoginAsync(loginDto);
