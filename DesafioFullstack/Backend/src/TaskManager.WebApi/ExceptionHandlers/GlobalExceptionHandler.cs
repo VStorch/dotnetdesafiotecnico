@@ -24,6 +24,7 @@ namespace TaskManager.WebApi.ExceptionHandlers
             {
                 EmailAlreadyExistsException e => (StatusCodes.Status400BadRequest, e.Message),
                 InvalidCredentialsException e => (StatusCodes.Status401Unauthorized, e.Message),
+                TaskNotFoundException e => (StatusCodes.Status404NotFound, e.Message),
 
                 DomainException e => (StatusCodes.Status400BadRequest, e.Message),
 
