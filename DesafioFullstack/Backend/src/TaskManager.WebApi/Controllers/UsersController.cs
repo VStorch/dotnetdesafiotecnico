@@ -18,23 +18,10 @@ namespace TaskManager.WebApi.Controllers
         [HttpPost("register")]
         [ProducesResponseType(typeof(UserResponseDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register(RegisterUserDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto registerDto)
         {
-            try
-            {
-                var response = await _userService.RegisterAsync(registerDto);
-
-                return Created(string.Empty, response);
-            }
-            catch (Exception ex) when (ex.Message == "Email already exists.")
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    new { message = "An error occurred while processing your request." });
-            }
+            var response = await _userService.RegisterAsync(registerDto);
+            return Created(string.Empty, response);
         }
     }
 }

@@ -7,6 +7,7 @@ using TaskManager.Domain.Repositories;
 using TaskManager.Infrastructure.Data;
 using TaskManager.Infrastructure.Repositories;
 using TaskManager.Infrastructure.Security;
+using TaskManager.WebApi.ExceptionHandlers;
 
 namespace TaskManager.WebApi
 {
@@ -33,6 +34,9 @@ namespace TaskManager.WebApi
             services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(cfg => { }, typeof(UserProfile));
+
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -45,6 +49,7 @@ namespace TaskManager.WebApi
                 app.UseSwaggerUI();
             }
 
+            app.UseExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseRouting();
