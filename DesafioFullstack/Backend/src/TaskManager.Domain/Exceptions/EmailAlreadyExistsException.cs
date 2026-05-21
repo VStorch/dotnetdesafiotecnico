@@ -1,10 +1,8 @@
 namespace TaskManager.Domain.Exceptions
 {
-    public class EmailAlreadyExistsException : Exception
+    public class EmailAlreadyExistsException : DomainException
     {
         public EmailAlreadyExistsException(string email)
-            : base($"The email '{email}' is already in use.")
-        {
-        }
+            : base($"The email '{email}' is already in use.") { }
     }
 }

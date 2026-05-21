@@ -20,27 +20,24 @@ namespace TaskManager.WebApi.ExceptionHandlers
         {
             _logger.LogError(exception, "An unhandled exception occurred.");
 
-            var errorResponse = new ErrorResponse
+            var (statusCode, message) = exception switch
             {
-                StatusCode = StatusCodes.Status500InternalServerError,
-                Message = "An unexpected error occurred on the server."
+                EmailAlreadyExistsException e => (StatusCodes.Status400BadRequest, e.Message),
+                InvalidCredentialsException e => (StatusCodes.Status401Unauthorized, e.Message),
+
+                DomainException e => (StatusCodes.Status400BadRequest, e.Message),
+
+                _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred.")
             };
 
-            if (exception is EmailAlreadyExistsException emailException)
-            {
-                errorResponse.StatusCode = StatusCodes.Status400BadRequest;
-                errorResponse.Message = emailException.Message;
-            }
-            else if (exception is InvalidCredentialsException credentialsException)
-            {
-                errorResponse.StatusCode = StatusCodes.Status401Unauthorized;
-                errorResponse.Message = credentialsException.Message;
-            }
-
-            httpContext.Response.StatusCode = errorResponse.StatusCode;
+            httpContext.Response.StatusCode = statusCode;
             httpContext.Response.ContentType = "application/json";
 
-            await httpContext.Response.WriteAsJsonAsync(errorResponse, cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(new ErrorResponse
+            {
+                StatusCode = statusCode,
+                Message = message
+            }, cancellationToken);
 
             return true;
         }
