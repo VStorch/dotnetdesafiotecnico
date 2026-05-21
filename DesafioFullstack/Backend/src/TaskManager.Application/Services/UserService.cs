@@ -1,3 +1,4 @@
+using AutoMapper;
 using TaskManager.Application.DTOs;
 using TaskManager.Application.Interfaces.Security;
 using TaskManager.Application.Interfaces.Services;
@@ -10,33 +11,26 @@ namespace TaskManager.Application.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher)
+        public UserService(IUserRepository userRepository, IPasswordHasher passwordHasher, IMapper mapper)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _mapper = mapper;
         }
 
         public async Task<UserResponseDto> RegisterAsync(RegisterUserDto registerDto)
         {
             await EmailExists(registerDto.Email);
 
-            var passwordHash = _passwordHasher.HashPassword(registerDto.Password);
+            var user = _mapper.Map<User>(registerDto);
 
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                Email = registerDto.Email,
-                PasswordHash = passwordHash,
-            };
+            user.PasswordHash = _passwordHasher.HashPassword(registerDto.Password);
 
             await _userRepository.AddAsync(user);
 
-            return new UserResponseDto
-            {
-                Id = user.Id,
-                Email = user.Email
-            };
+            return _mapper.Map<UserResponseDto>(user);
         }
 
         private async Task EmailExists(string email)
