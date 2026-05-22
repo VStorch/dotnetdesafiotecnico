@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
@@ -50,6 +50,12 @@ export default function Login() {
         <button type="submit" className="bg-blue-600 text-white p-2 rounded">
           Login
         </button>
+        <span className="text-sm text-center">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Register
+          </Link>
+        </span>
       </form>
     </div>
   );

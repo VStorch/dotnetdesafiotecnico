@@ -16,10 +16,16 @@ type LoginData = {
   password: string;
 };
 
+type RegisterData = {
+  email: string;
+  password: string;
+};
+
 type AuthContextType = {
   user: User | null;
   token: string | null;
   login: (data: LoginData) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => void;
 };
 
@@ -51,6 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user);
   }
 
+  async function register(data: RegisterData) {
+    await api.post("/Users/register", data);
+  }
+
   function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -65,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         login,
+        register,
         logout,
       }}
     >
