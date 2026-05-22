@@ -4,18 +4,25 @@ import api from "../services/api";
 import type { Task } from "../types/task";
 import { useAuth } from "../context/AuthContext";
 
+type Filter = "all" | "pending" | "completed";
+
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
 
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const { logout } = useAuth();
 
   async function loadTasks() {
-    const response = await api.get("/tasks");
-    setTasks(response.data);
+    try {
+      const response = await api.get("/tasks");
+      setTasks(response.data);
+    } catch {
+      console.error("Failed to load tasks");
+    }
   }
 
   useEffect(() => {
@@ -31,43 +38,61 @@ export default function Dashboard() {
   async function saveTask() {
     if (!title) return;
 
-    if (editingTask) {
-      await api.put(`/tasks/${editingTask.id}`, {
-        title,
-        description,
-        dueDate: editingTask.dueDate,
-        isCompleted: editingTask.isCompleted,
-      });
+    try {
+      if (editingTask) {
+        await api.put(`/tasks/${editingTask.id}`, {
+          title,
+          description,
+          dueDate: editingTask.dueDate,
+          isCompleted: editingTask.isCompleted,
+        });
 
-      setEditingTask(null);
-    } else {
-      await api.post("/tasks", {
-        title,
-        description,
-        dueDate: new Date().toISOString(),
-      });
+        setEditingTask(null);
+      } else {
+        await api.post("/tasks", {
+          title,
+          description,
+          dueDate: new Date().toISOString(),
+        });
+      }
+
+      setTitle("");
+      setDescription("");
+      loadTasks();
+    } catch {
+      console.error("Failed to save task");
     }
-
-    setTitle("");
-    setDescription("");
-    loadTasks();
   }
 
   async function deleteTask(id: string) {
-    await api.delete(`/tasks/${id}`);
-    loadTasks();
+    try {
+      await api.delete(`/tasks/${id}`);
+      loadTasks();
+    } catch {
+      console.error("Failed to delete task");
+    }
   }
 
   async function toggleTask(task: Task) {
-    await api.put(`/tasks/${task.id}`, {
-      title: task.title,
-      description: task.description,
-      dueDate: task.dueDate,
-      isCompleted: !task.isCompleted,
-    });
+    try {
+      await api.put(`/tasks/${task.id}`, {
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        isCompleted: !task.isCompleted,
+      });
 
-    loadTasks();
+      loadTasks();
+    } catch {
+      console.error("Failed to toggle task");
+    }
   }
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === "pending") return !task.isCompleted;
+    if (filter === "completed") return task.isCompleted;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -106,8 +131,24 @@ export default function Dashboard() {
         </button>
       </div>
 
+      <div className="flex gap-2 mb-4">
+        {(["all", "pending", "completed"] as Filter[]).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-4 py-1 rounded capitalize ${
+              filter === f
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-700 border"
+            }`}
+          >
+            {f === "all" ? "All" : f === "pending" ? "Pending" : "Completed"}
+          </button>
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <TaskCard
             key={task.id}
             task={task}
