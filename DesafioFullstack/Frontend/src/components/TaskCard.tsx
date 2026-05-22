@@ -4,9 +4,10 @@ type Props = {
   task: Task;
   onDelete: (id: string) => void;
   onToggle: (task: Task) => void;
+  onEdit: (task: Task) => void;
 };
 
-export default function TaskCard({ task, onDelete, onToggle }: Props) {
+export default function TaskCard({ task, onDelete, onToggle, onEdit }: Props) {
   return (
     <div className="border rounded p-4 flex flex-col gap-2 bg-white shadow">
       <h2 className="font-bold text-lg">{task.title}</h2>
@@ -21,6 +22,13 @@ export default function TaskCard({ task, onDelete, onToggle }: Props) {
           className="bg-green-600 text-white px-3 py-1 rounded"
         >
           Toggle
+        </button>
+
+        <button
+          onClick={() => onEdit(task)}
+          className="bg-yellow-500 text-white px-3 py-1 rounded"
+        >
+          Edit
         </button>
 
         <button

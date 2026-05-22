@@ -9,6 +9,8 @@ export default function Dashboard() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
   const { logout } = useAuth();
 
   async function loadTasks() {
@@ -20,18 +22,34 @@ export default function Dashboard() {
     loadTasks();
   }, []);
 
-  async function createTask() {
+  function handleEdit(task: Task) {
+    setEditingTask(task);
+    setTitle(task.title);
+    setDescription(task.description ?? "");
+  }
+
+  async function saveTask() {
     if (!title) return;
 
-    await api.post("/tasks", {
-      title,
-      description,
-      dueDate: new Date().toISOString(),
-    });
+    if (editingTask) {
+      await api.put(`/tasks/${editingTask.id}`, {
+        title,
+        description,
+        dueDate: editingTask.dueDate,
+        isCompleted: editingTask.isCompleted,
+      });
+
+      setEditingTask(null);
+    } else {
+      await api.post("/tasks", {
+        title,
+        description,
+        dueDate: new Date().toISOString(),
+      });
+    }
 
     setTitle("");
     setDescription("");
-
     loadTasks();
   }
 
@@ -81,10 +99,10 @@ export default function Dashboard() {
         />
 
         <button
-          onClick={createTask}
+          onClick={saveTask}
           className="bg-blue-600 text-white p-2 rounded"
         >
-          Create Task
+          {editingTask ? "Update Task" : "Create Task"}
         </button>
       </div>
 
@@ -95,6 +113,7 @@ export default function Dashboard() {
             task={task}
             onDelete={deleteTask}
             onToggle={toggleTask}
+            onEdit={handleEdit}
           />
         ))}
       </div>
