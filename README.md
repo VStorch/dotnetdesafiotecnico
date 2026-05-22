@@ -1,237 +1,182 @@
-# Desafio Técnico Fullstack - .NET Core + React
+# 🚀 TaskManager - Fullstack (.NET 8 + React)
 
-Este repositório contém a estrutura inicial de um projeto full stack com back-end em ASP.NET Core (.NET 8) usando Clean Architecture e front-end em React com TailwindCSS.
+## ⚡ Visão Geral
+
+TaskManager é uma aplicação fullstack de gerenciamento de tarefas (To-Do List) com autenticação JWT, desenvolvida com foco em **boas práticas de arquitetura, escalabilidade e testabilidade**.
+
+### 🧱 Stack principal
+
+- Backend: ASP.NET Core (.NET 8) + Clean Architecture
+- Frontend: React + Vite + TypeScript
+- Banco de dados: PostgreSQL
+- Infraestrutura: Docker + Docker Compose
+- Testes: xUnit, Moq, Vitest, React Testing Library
+
 ---
 
-## 📝 Descrição
-Crie uma aplicação web de gerenciamento de tarefas (To-Do List) com API em **.NET Core** e front-end em **React**.
----
+## ⚡ Quick Start
 
-## 🔧 Pré-requisitos
-
-- [.NET 8 SDK](https://dotnet.microsoft.com/)
-- [Node.js](https://nodejs.org/)
-- [Docker](https://www.docker.com/) (opcional, para ambiente com docker-compose)
----
----
-
-## 🎯 Objetivos
-
-### 📌 Back-End (.NET Core)
-- Criar API RESTful com as seguintes rotas:
-  - `POST /login`: autenticação JWT
-  - `GET /tasks`: listar todas as tarefas do usuário logado
-  - `GET /tasks/{id}`: obter uma tarefa específica
-  - `POST /tasks`: criar nova tarefa
-  - `PUT /tasks/{id}`: atualizar uma tarefa
-  - `DELETE /tasks/{id}`: excluir tarefa
-
-### 🗂️ Modelo de Dados
-```csharp
-public class TaskItem
-{
-    public Guid Id { get; set; }
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public DateTime DueDate { get; set; }
-    public bool IsCompleted { get; set; }
-}
+```bash
+git clone <repo>
+cd TaskManager
+docker compose up --build
 ```
 
-### 🔐 Requisitos Técnicos Backend
-- Autenticação JWT
-- Clean Architecture (Domain, Application, Infrastructure, WebApi)
-- Entity Framework Core com SQLite (ou outro banco à escolha)
-- Validações com FluentValidation
-- Swagger para documentação da API
-- **Testes automatizados com xUnit ou NUnit**
-  - Cobertura mínima recomendada: serviços e controladores principais
-  - Mock de repositórios com Moq ou equivalente
+Acesse:
+
+- 💻 Frontend: [http://localhost:3000](http://localhost:3000)
+- 📄 Swagger API: [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
 ---
-### 💻 Front-End (React)
-- Página de login
-- Página principal com lista de tarefas (filtro por status: todas, pendentes, concluídas)
-- Formulário para criação e edição de tarefas
-- Botões de ação (editar, concluir, excluir)
 
-### 💡 Requisitos Técnicos Frontend
-- React com Vite (ou Create React App)
-- Hooks e Context API, Redux ou zustand
-- Axios ou fetch para chamadas HTTP
-- TailwindCSS, MUI ou outro framework de UI (opcional)
-- **Testes automatizados com Jest + Testing Library**
-  - Testar componentes de formulário e tela de login
-  - Testes de integração simulando chamadas à API com mocks
+## 📦 Funcionalidades
 
----
-## 📦 Entregáveis
-- Repositório GitHub com:
-  - Código-fonte completo
-  - README com instruções para rodar API e front-end
-  - Explicações técnicas (ex: decisões de arquitetura)
-- Opcional: docker-compose para facilitar execução local
+### 🔐 Autenticação
+
+- Cadastro e login de usuários
+- Autenticação via JWT
+- Rotas protegidas por middleware
+- Isolamento de dados por usuário
+
+### 🗂️ Tarefas (CRUD)
+
+- Criar tarefas
+- Editar tarefas
+- Excluir tarefas
+- Marcar como concluída/pendente
+- Filtrar tarefas (todas, pendentes, concluídas)
+- Buscar tarefa por ID
 
 ---
-## ✅ Critérios de Avaliação
 
-| Critério                     | Peso |
-|-----------------------------|------|
-| Organização do código       | ⭐⭐⭐⭐ |
-| Boas práticas e arquitetura | ⭐⭐⭐⭐ |
-| Funcionamento da aplicação  | ⭐⭐⭐⭐ |
-| Validação e autenticação    | ⭐⭐⭐ |
-| UI e UX do front-end        | ⭐⭐  |
-| Uso de Git (commits claros) | ⭐⭐  |
-| **Testes automatizados**    | ⭐⭐  |
+## 🧱 Arquitetura
 
----
-## ⏱️ Tempo estimado
-3 a 5 dias úteis
+O backend segue rigorosamente **Clean Architecture**:
 
----
-## ⚙️ Starters
+- **Domain** → entidades e regras puras de negócio
+- **Application** → casos de uso e serviços
+- **Infrastructure** → banco de dados, EF Core, segurança
+- **WebApi** → controllers e camada HTTP
 
-### 🧱 Estrutura Backend (Clean Architecture)
-```
-Backend/
-├── src/
-│   ├── TaskManager.WebApi         # Camada de apresentação
-│   ├── TaskManager.Application    # Regras de negócio
-│   ├── TaskManager.Domain         # Entidades e interfaces
-│   └── TaskManager.Infrastructure # Repositórios e banco
-├── tests/
-│   └── TaskManager.Tests          # Testes unitários e de integração
-├── TaskManager.sln
-└── docker-compose.yml             # Banco e WebApi
-```
-
-### 🖥️ Estrutura Frontend (React + Tailwind)
-```
-Frontend/
-├── public/
-├── src/
-│   ├── components/        # Componentes reutilizáveis
-│   ├── pages/             # Login, Dashboard
-│   ├── services/          # API (axios)
-│   ├── context/           # Autenticação e tarefas
-│   └── App.tsx
-├── tests/                 # Testes unitários dos componentes
-├── tailwind.config.js
-├── vite.config.ts
-└── package.json
-```
-
-### 🐳 docker-compose básico
-```yaml
-version: '3.8'
-services:
-  api:
-    build: ./Backend
-    ports:
-      - "5000:80"
-    depends_on:
-      - db
-  db:
-    image: postgres
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: taskmanager
-    ports:
-      - "5432:5432"
-  frontend:
-    build: ./Frontend
-    ports:
-      - "3000:3000"
+```mermaid
+graph TD
+    A[React Frontend] --> B[ASP.NET Core API]
+    B --> C[Application Layer]
+    C --> D[Domain Layer]
+    B --> E[Infrastructure Layer]
+    E --> F[(PostgreSQL)]
 ```
 
 ---
-**Bônus:** testes automatizados, CI/CD, deploy no Vercel/Render/Azure.
 
+## 🧠 Decisões de Engenharia
 
-## ▶️ Como rodar o projeto
+- **JWT stateless** → facilita escalabilidade horizontal
+- **Clean Architecture** → desacoplamento total do domínio
+- **EF Core** → produtividade com controle de persistência
+- **FluentValidation** → validações fora dos controllers
+- **Middleware global** → tratamento padronizado de erros
 
-### 🔙 Backend (.NET Core)
+---
 
-1. Navegue até a pasta:
+## 🧪 Estratégia de Testes
+
+### Backend
+
+- xUnit para testes unitários
+- Moq para mock de dependências
+- Testes em Services e Controllers
+
+### Frontend
+
+- Vitest + Testing Library
+- Testes de comportamento do usuário
+- Simulação de chamadas à API
+
+---
+
+## 💻 Frontend
+
+Estrutura modular com foco em tipagem forte:
+
+```
+src/
+├── components/
+├── pages/
+├── context/
+├── services/
+├── types/
+└── tests/
+```
+
+### Tecnologias:
+
+- React + Vite
+- TypeScript
+- TailwindCSS
+- Axios
+- Context API
+
+---
+
+## 🔙 Backend
+
+Estrutura baseada em Clean Architecture:
+
+```
+src/
+├── TaskManager.Domain
+├── TaskManager.Application
+├── TaskManager.Infrastructure
+└── TaskManager.WebApi
+
+tests/
+└── TaskManager.Tests
+```
+
+### Tecnologias:
+
+- ASP.NET Core (.NET 8)
+- Entity Framework Core
+- PostgreSQL
+- JWT Authentication
+- FluentValidation
+- Swagger
+
+---
+
+## ⚙️ Como executar manualmente
+
+### Banco de dados
+
+PostgreSQL rodando na porta `5432`
+
+---
+
+### Backend
 
 ```bash
 cd Backend/src/TaskManager.WebApi
-```
-
-2. Execute as migrações (caso use EF Core):
-
-```bash
 dotnet ef database update
-```
-
-3. Inicie a API:
-
-```bash
 dotnet run
 ```
 
-A API estará disponível em `http://localhost:5000`.
+API: [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
 ---
 
-### 💻 Frontend (React)
-
-1. Navegue até a pasta:
+### Frontend
 
 ```bash
 cd Frontend
-```
-
-2. Instale as dependências:
-
-```bash
 npm install
-```
-
-3. Inicie a aplicação:
-
-```bash
 npm run dev
 ```
 
-A interface estará disponível em `http://localhost:3000`.
+Frontend: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-### 🐳 Usando Docker Compose
+## 👨‍💻 Autor
 
-1. Na raiz do projeto, execute:
-
-```bash
-docker-compose up --build
-```
-
-Isso irá iniciar a API, banco de dados e o front-end.
-
----
-
-## 📁 Estrutura
-
-```
-DesafioFullstack/
-├── Backend/
-│   ├── src/
-│   ├── tests/
-│   └── docker-compose.yml
-└── Frontend/
-```
-
----
-
-## 📌 Observações
-
-- Utilize o token JWT retornado pelo login para autenticar as requisições às rotas protegidas.
-- Arquivos de exemplo e componentes mockados estão incluídos para facilitar o desenvolvimento.
-
----
-
-## ✅ Pronto para começar!
-
-Boa sorte no desafio! 💪
+**Vinícius Storch**
