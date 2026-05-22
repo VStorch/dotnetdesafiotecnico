@@ -44,6 +44,18 @@ namespace TaskManager.WebApi
                 ?? throw new InvalidOperationException("JWT Secret key is not configured.");
             var key = Encoding.UTF8.GetBytes(secretKey);
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy =>
+                    {
+                        policy
+                            .WithOrigins("http://localhost:5173")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,6 +95,8 @@ namespace TaskManager.WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("AllowFrontend");
 
             app.UseAuthentication();
             app.UseAuthorization();
