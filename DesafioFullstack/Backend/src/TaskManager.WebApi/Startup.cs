@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using TaskManager.Application.Interfaces.Security;
 using TaskManager.Application.Interfaces.Services;
 using TaskManager.Application.Mappings;
@@ -27,7 +28,33 @@ namespace TaskManager.WebApi
         {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter only your JWT token (without the word 'Bearer')"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
 
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
@@ -49,8 +76,12 @@ namespace TaskManager.WebApi
                 options.AddPolicy("AllowFrontend",
                     policy =>
                     {
+                        var allowedOrigins = Configuration
+                            .GetSection("Cors:AllowedOrigins")
+                            .Get<string[]>() ?? [];
+
                         policy
-                            .WithOrigins("http://localhost:5173")
+                            .WithOrigins(allowedOrigins)
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
@@ -83,16 +114,15 @@ namespace TaskManager.WebApi
             services.AddProblemDetails();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, AppDbContext dbContext)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            dbContext.Database.Migrate();
 
             app.UseExceptionHandler();
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
